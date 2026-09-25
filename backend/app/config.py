@@ -28,3 +28,5 @@ class Settings(BaseSettings):
 @lru_cache()
 def get_settings() -> Settings:
     return Settings()
+
+# ALL THIS SETTINGS CAN BE ACCESSED BY WHOLE APP
