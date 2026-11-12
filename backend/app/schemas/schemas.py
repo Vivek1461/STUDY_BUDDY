@@ -1,68 +1,63 @@
-from pydantic import BaseModel, EmailStr
-from typing import Optional, List 
+"""Validated request and response contracts."""
 from datetime import datetime
-# ── Auth ─────────
+from typing import Literal
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 class UserCreate(BaseModel):
     email: EmailStr
-    password: str
+    password: str = Field(min_length=10, max_length=72)
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=1, max_length=72)
 
 class UserOut(BaseModel):
-    id:str
-    email:str
+    model_config = ConfigDict(from_attributes=True)
+    id: str
+    email: EmailStr
     created_at: datetime
-    
-    class Config:
-        from attributes = True
 
 class Token(BaseModel):
     access_token: str
-    token_type: str ="bearer"
+    token_type: str = "bearer"
 
 class GuestSession(BaseModel):
     session_id: str
-    message: str ="Gest session created"
+    access_token: str
+    token_type: str = "bearer"
+    message: str = "Guest session created"
 
-#Sessions-----------------------------
 class FileOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: str
     original_name: str
     file_type: str
-    file_size: int 
+    file_size: int
     status: str
     chunk_count: int
     created_at: datetime
-    class Config:
-        from_attributes = True
 
 class SessionOut(BaseModel):
-    id : str
-    label: Optional[str]
+    model_config = ConfigDict(from_attributes=True)
+    id: str
+    label: str | None
     is_guest: bool
     status: str
     created_at: datetime
-    files: List[FileOut]=[]
+    files: list[FileOut] = Field(default_factory=list)
 
-    class Config:
-        from_attributes = True
-
-#------Chat_-------------------------
 class ChatMessage(BaseModel):
-    message: str
-    action: Optional[str]= None # teach | keypoints | quiz | examtips
+    message: str = Field(min_length=1, max_length=8000)
+    action: Literal["teach", "keypoints", "quiz", "examtips"] | None = None
 
 class MessageOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: str
     role: str
     content: str
     created_at: datetime
-    class Config:
-        from_attributes= True
-# ── Upload ────────────────────────────────────────────────────
+
 class UploadResponse(BaseModel):
     session_id: str
     file: FileOut
     message: str
-    
-
-

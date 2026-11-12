@@ -1,32 +1,36 @@
-form pydantic_settings import BaseSettings
+"""Typed application configuration loaded from environment variables."""
 from functools import lru_cache
-#pydantic-settings+ pydantic==2.7.1
-# ==2.3.0- -----> pydanticsettings is a library Works with pydantic and can read the configuration values from .env files, env variables, default values , other supported configuration sources.
-# so instead of using manual Import os and using os.getenv(GROQ_API), os.getenv(DB_URL), BaseSettings handles it.
-# form functools import lru_cache    --> (Least Recently used Cache)
-# (Built in library in python==functools which contains Lru) |^|---(Allows python to remember the result of a function call so it doesn’t have to execute the function again unnecessarily. )
+from pathlib import Path
+from pydantic import Field, SecretStr, model_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# creating a python class called as Settings and giving a inheritance of BaseSettings so that using its functionality we can access  BaseSetting functionalities of reading .env variables.
 class Settings(BaseSettings):
-#    application environment 
-#var name(app_env)   Type(str)    = default value("development")
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore")
     app_env: str = "development"
-    secret_key: str = "change-me"
-    algorithm : str ="HS256"
-    access_token_expire_minutes: int =1440
-    groq_api_key: str
-    database_url: str
-    chroma_persist_dir: str = "./chroma_db"
-    upload_dir : str = "./uploads"
-    max_upload_size_mb: int = 20
-    frontend_url: str ="http://localhost:5173"
+    secret_key: SecretStr = SecretStr("unsafe-development-secret-change-before-deploy")
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = Field(default=60, ge=5, le=10080)
+    groq_api_key: SecretStr | None = None
+    database_url: str = "sqlite:///./study_buddy.db"
+    chroma_persist_dir: Path = Path("./chroma_db")
+    upload_dir: Path = Path("./uploads")
+    max_upload_size_mb: int = Field(default=20, ge=1, le=200)
+    frontend_url: str = "http://localhost:5173"
+    cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5500"]
+    llm_model: str = "llama-3.1-8b-instant"
+    embedding_model: str = "all-MiniLM-L6-v2"
+    request_timeout_seconds: float = Field(default=30, gt=0, le=180)
 
-    class Config: 
-        env_file = ".env"
-        case_sensitive = False
-#Lru cache is used so the Settings are only Loaded Once, not on every request.
-@lru_cache()
+    @model_validator(mode="after")
+    def validate_production_secrets(self):
+        if self.app_env.lower() == "production":
+            secret = self.secret_key.get_secret_value()
+            if secret.startswith("unsafe-") or len(secret) < 32:
+                raise ValueError("SECRET_KEY must contain at least 32 non-placeholder characters in production")
+            if not self.groq_api_key:
+                raise ValueError("GROQ_API_KEY is required in production")
+        return self
+
+@lru_cache
 def get_settings() -> Settings:
     return Settings()
-
-# ALL THIS SETTINGS CAN BE ACCESSED BY WHOLE APP

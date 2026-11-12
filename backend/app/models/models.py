@@ -1,78 +1,53 @@
-from sqlalchemy import Column , String, Integer, DateTime,  Text, ForeignKey, Boolean
-
-from sqlachemy.orm import relationship
-
-from sqlalchemy.sql import func
+"""Relational persistence models."""
 import uuid
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Index, Integer, String, Text, func
+from sqlalchemy.orm import relationship
 from app.database import Base
+
+def new_id() -> str:
+    return str(uuid.uuid4())
 
 class User(Base):
     __tablename__ = "users"
-    id =Column(String, primary_key=True, default = gen__uuid)
-    email = Column(String, unique=True, index = True, nullable=False)
-    hashed_password = Column(String, nullable = False)
-    is_active = Column(Boolean, default = True)
-    created_at = Column(DateTime(timezone =True),  server_default = func.now())
-    sessions = relationship("StudySession", back_populates= "user", cascade = "all, delete")
+    id = Column(String(36), primary_key=True, default=new_id)
+    email = Column(String(320), unique=True, index=True, nullable=False)
+    hashed_password = Column(String(255), nullable=False)
+    is_active = Column(Boolean, nullable=False, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    sessions = relationship("StudySession", back_populates="user", cascade="all, delete-orphan")
 
 class StudySession(Base):
-   
     __tablename__ = "study_sessions"
-   
-    id = Column(String, primary_key=True, default = gen_uuid)
-   
-    user_id= Column(String, ForeignKey("user.id",ondelete="CASCADE"), nullable=True)
-   
-    label = Column(String, nullable=True)
-   
-    is_guest= Column(Boolean, default=False)
-   
-    status = Column(String, default = "active")
-   
-    created_at = Column(DateTime(timezone=True), sever_default= func.now())
-
+    id = Column(String(36), primary_key=True, default=new_id)
+    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True)
+    label = Column(String(255))
+    is_guest = Column(Boolean, nullable=False, default=False)
+    status = Column(String(20), nullable=False, default="active")
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     user = relationship("User", back_populates="sessions")
-    
-    files = relationship("UploadFile", back_populates="session", cascade="all delete")
-    
-    messages = relationship("Message", back_populates ="session",cascade="all delete")
+    files = relationship("UploadFile", back_populates="session", cascade="all, delete-orphan")
+    messages = relationship("Message", back_populates="session", cascade="all, delete-orphan")
 
 class UploadFile(Base):
     __tablename__ = "upload_files"
-
-    id = Column(String, primary_key = True, default = gen_uuid)
-
-    session_id = Column(String, Foreign_key("study_session.id",ondelete = "CASCADE"), nullable= False)
-
-    original_name = Column(String, nullable=False)
-
-    stored_name = Column(String, nullable=False)
-
-    file_type = Column(String, nullable=False)
-
+    id = Column(String(36), primary_key=True, default=new_id)
+    session_id = Column(String(36), ForeignKey("study_sessions.id", ondelete="CASCADE"), nullable=False, index=True)
+    original_name = Column(String(255), nullable=False)
+    stored_name = Column(String(255), unique=True, index=True, nullable=False)
+    file_type = Column(String(20), nullable=False)
     file_size = Column(Integer, nullable=False)
-
-    status = Column(String, default="processing")
-
-    chunk_count = Column(Integer, default = 0)
-
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-
+    status = Column(String(20), nullable=False, default="processing")
+    chunk_count = Column(Integer, nullable=False, default=0)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     session = relationship("StudySession", back_populates="files")
 
 class Message(Base):
     __tablename__ = "messages"
-    id = Column(String, primary_key = True, default = gen_uuid)
-
-    session_id = Column(String, ForeignKey("study_sessions.id", ondelete="CASCADE"), nullable= False)
-
-    role = Column(String, nullable = False)
-
-    content = Column(Text, nullable =False)
-
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-
+    id = Column(String(36), primary_key=True, default=new_id)
+    session_id = Column(String(36), ForeignKey("study_sessions.id", ondelete="CASCADE"), nullable=False, index=True)
+    role = Column(String(20), nullable=False)
+    content = Column(Text, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     session = relationship("StudySession", back_populates="messages")
-    
-    
 
+Index("ix_messages_session_created", Message.session_id, Message.created_at)

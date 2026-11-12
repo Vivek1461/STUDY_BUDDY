@@ -1,24 +1,25 @@
-from sqlalchemy import create_engine 
-#SQLALCHEMY is a library for communicating with relational db, ex.MYSQL, PostgreSQL, SQLITE,Oracle, Microsoft SQL SERver
-
-from sqlalchemy.ext.declarative import declarative_base
-
-from sqlalchemy.orm import sessionmaker
-# session_maker used to perform opertaions such as insert, select, update, delete, commit, rollback.Each API request  can get its own database session.
+"""Database engine and request-scoped SQLAlchemy sessions."""
+from collections.abc import Generator
+from sqlalchemy import create_engine
+from sqlalchemy.orm import DeclarativeBase, sessionmaker, Session
 from app.config import get_settings
 
-settings = get_settings()
-# Creates a database engine, manager of db
-engine = create_engine(settings.database_url)
+class Base(DeclarativeBase):
+    pass
 
-SessionLocal = sessionmaker(autocommit = False, autoflush= False, bind=engine)
-Base = declerative_base()
+_settings = get_settings()
+_connect_args = {"check_same_thread": False} if _settings.database_url.startswith("sqlite") else {}
+engine = create_engine(
+    _settings.database_url,
+    pool_pre_ping=True,
+    pool_recycle=1800,
+    connect_args=_connect_args,
+)
+SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, expire_on_commit=False)
 
-
-def get_db():
-    db= SessionLocal()
+def get_db() -> Generator[Session, None, None]:
+    db = SessionLocal()
     try:
-        yield db 
-        #yield in get_db() -> FastAPI automatically closes the DB connection after each request Finishes.
+        yield db
     finally:
         db.close()
