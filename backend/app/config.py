@@ -16,8 +16,8 @@ class Settings(BaseSettings):
     upload_dir: Path = Path("./uploads")
     max_upload_size_mb: int = Field(default=20, ge=1, le=200)
     frontend_url: str = "http://localhost:5173"
-    cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5500"]
-    llm_model: str = "llama-3.1-8b-instant"
+    cors_origins: list[str] = ["http://localhost:5173", "http://localhost:5500", "http://127.0.0.1:5500"]
+    llm_model: str = "qwen/qwen3.8-27b"
     embedding_model: str = "all-MiniLM-L6-v2"
     request_timeout_seconds: float = Field(default=30, gt=0, le=180)
 

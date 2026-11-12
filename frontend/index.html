@@ -21,14 +21,14 @@
       <div class="workspace-label">YOUR WORKSPACE</div>
       <nav class="primary-nav" aria-label="Main navigation">
         <button class="nav-link active" data-view="home"><span class="nav-icon">⌂</span><span>Overview</span></button>
-        <button class="nav-link" data-view="library"><span class="nav-icon">▤</span><span>My library</span><span class="nav-count" id="library-count">02</span></button>
+        <button class="nav-link" data-view="library"><span class="nav-icon">▤</span><span>My library</span><span class="nav-count" id="library-count">00</span></button>
         <button class="nav-link" data-view="study"><span class="nav-icon">✳</span><span>Study space</span></button>
       </nav>
       <div class="sidebar-rule"></div>
       <div class="workspace-label recent-label">PICK UP WHERE YOU LEFT OFF <span class="tiny-dot"></span></div>
       <button class="recent-session" data-view="study">
         <span class="recent-file">PDF</span>
-        <span class="recent-copy"><strong>Cell Biology</strong><small>Study session · Preview</small></span>
+        <span class="recent-copy"><strong>Guest study session</strong><small>Connected workspace</small></span>
         <span class="recent-arrow">↗</span>
       </button>
       <div class="sidebar-bottom">
@@ -50,7 +50,7 @@
         <button class="mobile-brand" data-view="home"><span class="brand-mark small"><span></span><span></span><span></span></span>studybuddy</button>
         <div class="breadcrumb"><span>Workspace</span><b>/</b><strong id="crumb-current">Overview</strong></div>
         <div class="topbar-actions">
-          <span class="preview-indicator"><i></i> Interactive preview</span>
+          <span class="preview-indicator"><i></i> Connecting to backend…</span>
           <button class="icon-button theme-toggle" id="theme-toggle" aria-label="Switch colour theme" title="Switch theme"><span id="theme-icon">☾</span></button>
           <button class="top-avatar" aria-label="Student profile">S</button>
         </div>
@@ -105,16 +105,7 @@
           <div class="lower-grid">
             <section class="recent-panel">
               <div class="panel-heading"><div><div class="eyebrow muted-eyebrow">ON YOUR DESK</div><h2>Recently opened</h2></div><button class="text-link" data-view="library">View library <span>→</span></button></div>
-              <button class="document-row" data-view="study">
-                <span class="document-thumb pdf-thumb"><b>PDF</b><i></i><i></i><i></i></span>
-                <span class="document-info"><strong>Cell Biology — Chapter 04</strong><small>Example material <span>·</span> PDF document</small></span>
-                <span class="document-status"><i></i> Preview ready</span><span class="row-chevron">↗</span>
-              </button>
-              <button class="document-row" data-view="library">
-                <span class="document-thumb notes-thumb"><b>TXT</b><i></i><i></i><i></i></span>
-                <span class="document-info"><strong>Principles of Genetics</strong><small>Example material <span>·</span> Text notes</small></span>
-                <span class="document-status muted-status">Sample item</span><span class="row-chevron">↗</span>
-              </button>
+              <div id="recent-documents"><p class="hero-description">Your uploaded study materials will appear here.</p></div>
             </section>
             <aside class="quote-panel">
               <span class="quote-mark">“</span>
@@ -130,25 +121,18 @@
         <div class="page-wrap subpage-wrap">
           <div class="eyebrow"><span class="eyebrow-line"></span> YOUR KNOWLEDGE, IN ONE PLACE</div>
           <div class="subpage-title-row"><div><h1>Your <em>library.</em></h1><p class="hero-description">A home for the material that moves your learning forward.</p></div><button class="button button-primary" id="library-upload">Add material <span>＋</span></button></div>
-          <div class="library-toolbar"><div class="search-field"><span>⌕</span><input id="library-search" type="search" placeholder="Find a document..." aria-label="Search documents"></div><span class="library-count-label" id="library-summary">2 example items</span></div>
-          <div class="library-list" id="library-list">
-            <button class="library-item" data-view="study" data-search="cell biology chapter 04 pdf">
-              <span class="document-thumb pdf-thumb"><b>PDF</b><i></i><i></i><i></i></span><span class="document-info"><strong>Cell Biology — Chapter 04</strong><small>Example material · PDF document</small></span><span class="document-status"><i></i> Preview ready</span><span class="row-chevron">↗</span>
-            </button>
-            <button class="library-item" data-view="study" data-search="principles genetics notes txt">
-              <span class="document-thumb notes-thumb"><b>TXT</b><i></i><i></i><i></i></span><span class="document-info"><strong>Principles of Genetics</strong><small>Example material · Text notes</small></span><span class="document-status muted-status">Sample item</span><span class="row-chevron">↗</span>
-            </button>
-          </div>
-          <div class="library-empty" id="library-empty" hidden><span>⌕</span><h3>No matching material</h3><p>Try another title or clear your search.</p></div>
-          <div class="library-footnote">This is a frontend preview. Sample items are illustrative and are not stored documents.</div>
+          <div class="library-toolbar"><div class="search-field"><span>⌕</span><input id="library-search" type="search" placeholder="Find a document..." aria-label="Search documents"></div><span class="library-count-label" id="library-summary">0 documents</span></div>
+          <div class="library-list" id="library-list"></div>
+          <div class="library-empty" id="library-empty" hidden><span>⌕</span><h3>No documents yet</h3><p>Upload your first study document to build your library.</p></div>
+          <div class="library-footnote">Your uploaded documents are stored in your Study Buddy session.</div>
         </div>
       </section>
 
       <section class="view" id="view-study">
         <div class="study-page">
           <div class="study-nav">
-            <div class="study-nav-left"><button class="back-button" data-view="home" aria-label="Back to overview">←</button><span class="study-nav-divider"></span><span class="study-doc-icon">PDF</span><div class="study-doc-meta"><strong>Cell Biology — Chapter 04</strong><small>Example material · Preview workspace</small></div></div>
-            <div class="study-nav-right"><span class="source-status"><i></i> Sample context only</span><button class="icon-button theme-toggle" aria-label="Switch colour theme"><span class="theme-glyph">☾</span></button><button class="button button-outline small-button" data-view="library">My library</button></div>
+            <div class="study-nav-left"><button class="back-button" data-view="home" aria-label="Back to overview">←</button><span class="study-nav-divider"></span><span class="study-doc-icon">SB</span><div class="study-doc-meta"><strong>Your study session</strong><small>Connecting to your workspace…</small></div></div>
+            <div class="study-nav-right"><span class="source-status"><i></i> Connecting…</span><button class="icon-button theme-toggle" aria-label="Switch colour theme"><span class="theme-glyph">☾</span></button><button class="button button-outline small-button" data-view="library">My library</button></div>
           </div>
           <div class="study-content">
             <div class="study-heading"><div class="eyebrow"><span class="eyebrow-line"></span> YOUR STUDY SESSION</div><h1>Let's make sense<br>of <em>the small things.</em></h1><p>Explore a concept, ask a question, or choose a way to revise.</p></div>
@@ -159,18 +143,13 @@
               <button class="mode-button" data-mode="examtips"><span>↗</span><b>Exam tips</b><small>Prepare with purpose</small></button>
             </div>
             <div class="conversation-shell">
-              <div class="conversation-top"><span class="conversation-label"><i></i> LEARNING CONVERSATION</span><span class="conversation-preview">INTERACTIVE PREVIEW</span></div>
-              <div class="messages" id="messages" aria-live="polite">
-                <div class="assistant-message">
-                  <div class="assistant-mark">s<span>✳</span></div>
-                  <div class="message-body"><div class="message-author">STUDY BUDDY <span>· EXAMPLE RESPONSE</span></div><p>Welcome to your study space. Let's make this topic feel a little more familiar.</p><p>Try asking about <strong>cell structure</strong>, or choose a learning mode above to explore a sample interaction.</p><div class="message-note"><span>ⓘ</span> This is sample interface content. Live document-grounded answers are not connected yet.</div></div>
-                </div>
-              </div>
+              <div class="conversation-top"><span class="conversation-label"><i></i> LEARNING CONVERSATION</span><span class="conversation-preview">CONNECTING…</span></div>
+              <div class="messages" id="messages" aria-live="polite"></div>
               <div class="suggested-prompts"><span>TRY ASKING</span><button data-prompt="Explain the structure of a cell">Explain cell structure <span>↗</span></button><button data-prompt="What are the key parts of a cell?">Key parts of a cell <span>↗</span></button></div>
-              <form class="composer" id="chat-form"><textarea id="chat-input" rows="1" placeholder="Ask a question about your material..." aria-label="Your question"></textarea><button type="submit" aria-label="Send preview message">↑</button></form>
-              <div class="composer-foot"><span>↳ Your curiosity is welcome here.</span><span>PREVIEW MODE · NOT CONNECTED TO AI</span></div>
+              <form class="composer" id="chat-form"><textarea id="chat-input" rows="1" placeholder="Ask a question about your material..." aria-label="Your question"></textarea><button type="submit" aria-label="Send message">↑</button></form>
+              <div class="composer-foot"><span>↳ Your curiosity is welcome here.</span><span>CONNECTING TO STUDY BUDDY</span></div>
             </div>
-            <div class="trust-footnote"><span>✳</span><p><strong>A note on sources</strong> — this preview does not retrieve or verify document sources. Source-grounded trust indicators will appear once the backend provides retrieval evidence.</p></div>
+            <div class="trust-footnote"><span>✳</span><p><strong>Document-grounded answers</strong> — questions are answered using passages retrieved from the documents uploaded to this session. Verify important details against your original material.</p></div>
           </div>
         </div>
       </section>

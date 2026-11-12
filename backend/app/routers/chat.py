@@ -7,7 +7,7 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Message
-from app.schemas.schemas import ChatMessage
+from app.schemas.schemas import ChatMessage, MessageOut
 from app.services.auth import RequestIdentity, require_identity
 from app.routers.sessions import get_owned_session
 from app.services.rag import retrieve_context
@@ -15,6 +15,13 @@ from app.services.llm import stream_response
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/chat", tags=["chat"])
+
+@router.get("/{session_id}/messages", response_model=list[MessageOut])
+def list_messages(session_id: str, db: Session = Depends(get_db),
+                  identity: RequestIdentity = Depends(require_identity)):
+    session = get_owned_session(session_id, identity, db)
+    return db.query(Message).filter(Message.session_id == session.id) \
+        .order_by(Message.created_at.asc()).limit(100).all()
 
 @router.post("/{session_id}/messages")
 async def send_message(session_id: str, payload: ChatMessage, db: Session = Depends(get_db),

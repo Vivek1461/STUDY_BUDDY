@@ -154,6 +154,11 @@ class StudyBuddyAPITests(unittest.TestCase):
         self.assertEqual(chat.status_code, 200, chat.text)
         self.assertIn('"token": "Mitochondria "', chat.text)
         self.assertIn('"done": true', chat.text)
+        history_response = self.client.get(
+            f"/api/chat/{guest['session_id']}/messages", headers=headers)
+        self.assertEqual(history_response.status_code, 200)
+        self.assertEqual([item["role"] for item in history_response.json()], ["user", "assistant"])
+        self.assertIn("What do mitochondria do?", history_response.text)
         db = self.Session()
         try:
             history = db.query(__import__("app.models", fromlist=["Message"]).Message).filter_by(

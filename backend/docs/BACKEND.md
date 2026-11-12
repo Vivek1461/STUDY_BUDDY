@@ -36,8 +36,13 @@ Copy .env.example to .env and configure values locally. Production requires SECR
 3. Or POST /api/auth/guest for a guest session and its session-scoped bearer token.
 4. POST /api/upload multipart form with file; optional session_id for authenticated users. Guest tokens are bound to their created session.
 5. POST /api/chat/{session_id}/messages with JSON message and optional action (teach, keypoints, quiz, examtips). Response uses Server-Sent Events.
-6. GET /api/sessions lists sessions available to the identity.
-7. DELETE /api/upload/{file_id} deletes an owned document.
+6. GET /api/chat/{session_id}/messages returns the latest 100 persisted messages for the owned session.
+7. GET /api/sessions lists sessions available to the identity; GET /api/sessions/{session_id} reads one owned session with its uploaded files.
+8. DELETE /api/upload/{file_id} deletes an owned document.
+
+## Frontend integration
+
+The plain HTML/CSS/JavaScript frontend calls the FastAPI service at http://127.0.0.1:8000 by default. Override this before loading app.js with window.STUDY_BUDDY_API_URL when using another backend origin. The browser sends the guest bearer token on protected requests, uploads files as multipart/form-data, reads chat Server-Sent Events, and restores session files and message history. FastAPI CORS must allow the frontend origin (the default configuration includes http://127.0.0.1:5500).
 
 Supported extensions: PDF, DOCX, PPTX, JPG/JPEG, PNG, TXT. Legacy binary DOC/PPT are rejected because configured parsers do not support them safely.
 
